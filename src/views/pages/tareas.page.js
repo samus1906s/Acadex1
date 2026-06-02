@@ -1,0 +1,125 @@
+import { layout } from "../layout.js";
+
+function obtenerBadgeEstado(estado) {
+  if (estado === "pendiente") return "bg-danger";
+  if (estado === "en progreso") return "bg-warning text-dark";
+  if (estado === "completada") return "bg-success";
+  return "bg-secondary";
+}
+
+function obtenerBadgePrioridad(prioridad) {
+  if (prioridad === "alta") return "bg-danger";
+  if (prioridad === "media") return "bg-warning text-dark";
+  if (prioridad === "baja") return "bg-success";
+  return "bg-secondary";
+}
+
+function obtenerClaseAlerta(mensaje) {
+  if (mensaje === "creada") return "alert-success";
+  if (mensaje === "actualizada") return "alert-warning";
+  if (mensaje === "eliminada") return "alert-danger";
+  return "";
+}
+
+export function tareasPage(tareas, mensaje) {
+  let contenido = `
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h1>Lista de tareas</h1>
+      <a href="/tareas/nueva" class="btn btn-primary">Nueva tarea</a>
+    </div>
+
+    <div class="card mb-4 shadow-sm">
+      <div class="card-body">
+        <form method="GET" action="/tareas" class="row g-3 align-items-end">
+          <div class="col-md-8">
+            <label class="form-label">Filtrar por estado</label>
+            <select name="estado" class="form-select">
+              <option value="">Todas</option>
+              <option value="pendiente">Pendiente</option>
+              <option value="en progreso">En progreso</option>
+              <option value="completada">Completada</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <button type="submit" class="btn btn-outline-primary w-100">
+              Filtrar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  `;
+
+  if (mensaje) {
+    contenido += `
+      <div class="alert ${obtenerClaseAlerta(mensaje)}">
+        Tarea ${mensaje} correctamente.
+      </div>
+    `;
+  }
+
+  if (tareas.length === 0) {
+    contenido += `
+      <div class="alert alert-info">
+        No hay tareas registradas.
+      </div>
+    `;
+  } else {
+    contenido += `
+      <table class="table table-striped table-hover shadow-sm">
+        <thead class="table-dark">
+          <tr>
+            <th>ID</th>
+            <th>Título</th>
+            <th>Descripción</th>
+            <th>Estado</th>
+            <th>Prioridad</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+
+    tareas.forEach(tarea => {
+      contenido += `
+        <tr>
+          <td>${tarea.id}</td>
+          <td>${tarea.titulo}</td>
+          <td>${tarea.descripcion}</td>
+          <td>
+            <span class="badge ${obtenerBadgeEstado(tarea.estado)}">
+              ${tarea.estado}
+            </span>
+          </td>
+          <td>
+            <span class="badge ${obtenerBadgePrioridad(tarea.prioridad)}">
+              ${tarea.prioridad}
+            </span>
+          </td>
+          <td>
+            <a href="/tareas/${tarea.id}" class="btn btn-sm btn-outline-primary">
+              <i class="bi bi-eye"></i>
+            </a>
+
+            <a href="/tareas/${tarea.id}/editar" class="btn btn-sm btn-outline-warning">
+              <i class="bi bi-pencil"></i>
+            </a>
+
+            <form action="/tareas/${tarea.id}/eliminar" method="POST" class="d-inline">
+              <button type="submit" class="btn btn-sm btn-outline-danger">
+                <i class="bi bi-trash"></i>
+              </button>
+            </form>
+          </td>
+        </tr>
+      `;
+    });
+
+    contenido += `
+        </tbody>
+      </table>
+    `;
+  }
+
+  return layout("Tareas", contenido);
+}

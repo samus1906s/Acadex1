@@ -19,9 +19,8 @@
     "url": "https://github.com/samus1906s/Acadex1/issues"
   },
   "homepage": "https://github.com/samus1906s/Acadex1#readme",
-
-
   "dependencies": {
+    "bootstrap": "^5.3.8",
     "dotenv": "^17.4.2",
     "express": "^5.2.1"
   },
